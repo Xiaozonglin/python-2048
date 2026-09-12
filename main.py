@@ -213,16 +213,33 @@ def signal_handler(signal, frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
-while 1:  
+# 上下左右键
+from pynput.keyboard import Key, Listener
+import os
+
+def on_press(key):
+    if key == Key.up:
+        op = 'w'
+    elif key == Key.down:
+        op = 's'
+    elif key == Key.left:
+        op = 'a'
+    elif key == Key.right:
+        op = 'd'
+    elif key == Key.esc:
+        return False
+    else:
+        return
+
     os.system("cls" if os.name == "nt" else "clear")
-    if game.is_game_continuable():
-        game.random_new_number()
+    if game.operate(op):
+        if game.is_game_continuable():
+            game.random_new_number()
     game.printTheData()
     print(f"当前 {game.get_score()} 分")
-    while 1:
-        op = input("Enter your operation (w, a, s, d):")
-        if game.operate(op) == True:
-            # 有效时继续下一次操作，无效重新输入
-            break
-        else:
-            print("操作无效，请重新操作。")
+
+game.random_new_number()
+game.printTheData()
+print(f"当前 {game.get_score()} 分")
+with Listener(on_press=on_press) as listener:
+    listener.join()
