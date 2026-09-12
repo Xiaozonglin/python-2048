@@ -3,11 +3,9 @@ from random import randint, random
 from collections import deque
 
 class Play:
-    # 存储每一格的数字
-    data = []
-
     def __init__(self) -> None:
-        # 初始化
+        # 初始化，存储每一格的数字
+        self.data = []
         for _ in range(16):
             self.data.append(0)
 
@@ -35,6 +33,8 @@ class Play:
     def random_new_number(self) -> None:
         # 随机选择一个添加数字
         vacent = self.get_vacent_index()
+        if len(vacent) == 0:
+            return
         random_index = randint(0, len(vacent) - 1)
         if random() > 0.6:
             random_number = 4
@@ -112,7 +112,7 @@ class Play:
                         deq.append(nums[index] * 2)
                         isUpdated = True
                     else:
-                        if i != len(deq):
+                        if i != 3 - len(deq):
                             # 发生平移
                             isUpdated = True
                         deq.append(nums[index])
@@ -180,7 +180,7 @@ class Play:
                         deq.append(nums[index] * 2)
                         isUpdated = True
                     else:
-                        if i != len(deq):
+                        if i != 3 - len(deq):
                             # 发生平移
                             isUpdated = True
                         deq.append(nums[index])
@@ -198,7 +198,7 @@ class Play:
         return isUpdated
 
     def is_game_continuable(self) -> bool:
-        if self.get_vacent_index is not None or self.operate('up', True) or self.operate('down', True) or self.operate('left', True) or self.operate('right', True):
+        if len(self.get_vacent_index()) > 0 or self.operate('w', True) or self.operate('s', True) or self.operate('a', True) or self.operate('d', True):
             return True
         return False
 
@@ -218,26 +218,25 @@ from pynput.keyboard import Key, Listener
 import os
 
 def on_press(key):
-    if key == Key.up:
-        op = 'w'
-    elif key == Key.down:
-        op = 's'
-    elif key == Key.left:
-        op = 'a'
-    elif key == Key.right:
-        op = 'd'
-    elif key == Key.esc:
-        return False
-    else:
-        return
+    match key:
+        case Key.up: op = 'w'
+        case Key.down: op = 's'
+        case Key.left: op = 'a'
+        case Key.right: op = 'd'
+        case Key.esc: return False
+        case _: return
 
     os.system("cls" if os.name == "nt" else "clear")
     if game.operate(op):
-        if game.is_game_continuable():
-            game.random_new_number()
+        game.random_new_number()
+    if not game.is_game_continuable():
+        game.printTheData()
+        print(f"游戏结束，本局获得 {game.get_score()} 分")
+        return False
     game.printTheData()
     print(f"当前 {game.get_score()} 分")
 
+os.system("cls" if os.name == "nt" else "clear")
 game.random_new_number()
 game.printTheData()
 print(f"当前 {game.get_score()} 分")
