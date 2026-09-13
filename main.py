@@ -6,6 +6,7 @@ class Play:
     def __init__(self) -> None:
         # 初始化，存储每一格的数字
         self.data = []
+        self.score = 0
         for _ in range(16):
             self.data.append(0)
 
@@ -36,17 +37,14 @@ class Play:
         if len(vacent) == 0:
             return
         random_index = randint(0, len(vacent) - 1)
-        if random() > 0.6:
+        if random() > 0.9:
             random_number = 4
         else:
             random_number = 2
         self.data[vacent[random_index]] = random_number
 
     def get_score(self) -> int:
-        result = 0
-        for i in self.data:
-            result += i
-        return result
+        return self.score
 
     def operate(self, op: str, isTest: bool = False) -> bool:
         # 进行操作，上下左右，返回操作是否有效
@@ -76,6 +74,7 @@ class Play:
                             isUpdated = True
                     elif deq[-1] == nums[index]:
                         deq.pop()
+                        self.score += nums[index] * 2
                         deq.append(nums[index] * 2)
                         isUpdated = True
                     else:
@@ -109,6 +108,7 @@ class Play:
                             isUpdated = True
                     elif deq[-1] == nums[index]:
                         deq.pop()
+                        self.score += nums[index] * 2
                         deq.append(nums[index] * 2)
                         isUpdated = True
                     else:
@@ -143,6 +143,7 @@ class Play:
                             isUpdated = True
                     elif deq[-1] == nums[index]:
                         deq.pop()
+                        self.score += nums[index] * 2
                         deq.append(nums[index] * 2)
                         isUpdated = True
                     else:
@@ -177,6 +178,7 @@ class Play:
                             isUpdated = True
                     elif deq[-1] == nums[index]:
                         deq.pop()
+                        self.score += nums[index] * 2
                         deq.append(nums[index] * 2)
                         isUpdated = True
                     else:
@@ -204,15 +206,6 @@ class Play:
 
 game = Play()
 
-import signal
-import sys
-
-def signal_handler(signal, frame):
-    print("\n退出游戏")
-    sys.exit(0)
-
-signal.signal(signal.SIGINT, signal_handler)
-
 # 上下左右键
 from pynput.keyboard import Key, Listener
 import os
@@ -237,6 +230,7 @@ def on_press(key):
     print(f"当前 {game.get_score()} 分")
 
 os.system("cls" if os.name == "nt" else "clear")
+game.random_new_number()
 game.random_new_number()
 game.printTheData()
 print(f"当前 {game.get_score()} 分")
